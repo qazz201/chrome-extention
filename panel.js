@@ -1,15 +1,18 @@
+document.addEventListener("DOMContentLoaded", function (event) {
+    document.querySelector('.clearRequestTable').addEventListener('click', handleClearTable);
+});
+
 chrome.runtime.onMessage.addListener(
     function (message, sender, sendResponse) {
 
-        chrome.devtools.inspectedWindow.eval(
-            'console.log("RESSS___"+unescape("' +
-            escape(JSON.stringify(message)) + '")); console.log(chrome.runtime)');
+        // chrome.devtools.inspectedWindow.eval(
+        //     'console.log("RESSS___"+unescape("' +
+        //     escape(JSON.stringify(message)) + '")); console.log(chrome.runtime)');
 
         fillTable(
-            document.getElementById('TableA'),
+            document.querySelector('.table-container__requests'),
             message.request
         );
-
     }
 );
 
@@ -27,7 +30,7 @@ function fillTable(tableRef, request) {
         let apexClassAndMethodName = '';
         time = convertMillisToSecOrMin(time);
 
-        if (text) {
+        if (text && method === 'POST') {
             apexClassAndMethodName = extractApexClassAndMethodName(text);
         }
 
@@ -69,6 +72,9 @@ function createTableRow(tableRef, cellsToInsert = []) {
     })
 }
 
+function handleClearTable() {
+    document.querySelector('.table-container__requests')?.querySelector('tbody')?.remove()
+}
 
 // chrome.runtime.onMessage.addListener(
 //     function (message, sender, sendResponse) {
