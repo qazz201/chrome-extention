@@ -1,6 +1,10 @@
 chrome.runtime.onMessage.addListener(
     function (message, sender, sendResponse) {
 
+        chrome.devtools.inspectedWindow.eval(
+            'console.log("RESSS___"+unescape("' +
+            escape(JSON.stringify(message)) + '")); console.log(chrome.runtime)');
+
         fillTable(
             document.getElementById('TableA'),
             message.request
@@ -12,7 +16,7 @@ chrome.runtime.onMessage.addListener(
 function fillTable(tableRef, request) {
     if (request['_resourceType'] == 'xhr' || request['_resourceType'] == 'fetch') {
 
-        const {
+        let {
             time,
             _resourceType: resourceType,
             response: {status, content: {size}},
@@ -20,24 +24,38 @@ function fillTable(tableRef, request) {
             request: {method, postData: {text}}
         } = request;
 
-        let apexClassName = '';
+        let apexClassAndMethodName = '';
+        time = convertMillisToSecOrMin(time);
 
         if (text) {
-            apexClassName = extractApexClassAndMethodName(text);
+            apexClassAndMethodName = extractApexClassAndMethodName(text);
         }
 
-        createTableRow(tableRef, [time, apexClassName, resourceType, status, size, blocked, method]);
+        createTableRow(tableRef, [time, apexClassAndMethodName, resourceType, status, method, size, blocked]);
     }
 }
 
+function convertMillisToSecOrMin(time) {
+    if (time < 1000) {
+        return `${time.toFixed(1)} ms`;
+    }
+
+    if (time > 1000 && time < 60000) {
+        return `${(time / 1000).toFixed(1)} sec`;
+    }
+    if (time >= 60000) {
+        return `${Math.round(time / 60000)}min ${(time - 60000) / 1000}sec`
+    }
+    return time;
+}
 
 function extractApexClassAndMethodName(encodedUriString) {
     const decodedRequestString = decodeURIComponent(decodeURI(encodedUriString));
     const classMethodResult = decodedRequestString.match(/"classname":".+?"."method":".+?"/g);
 
-    chrome.devtools.inspectedWindow.eval(
-        'console.log("RESSS___"+unescape("' +
-        escape(decodedRequestString) + '")); console.log(chrome.runtime)');
+    // chrome.devtools.inspectedWindow.eval(
+    //     'console.log("RESSS___"+unescape("' +
+    //     escape(decodedRequestString) + '")); console.log(chrome.runtime)');
 
     return classMethodResult && classMethodResult.length ? classMethodResult.join('\n') : '';
 }
