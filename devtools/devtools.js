@@ -1,13 +1,16 @@
-chrome.devtools.panels.create('MY devtools', null, 'panel.html', function (panel) {
-    const port = chrome.runtime.connect({name: 'devtools'});
+chrome.devtools.panels.create('MY devtools', null, '../panel/index.html', function (panel) {
+    // const port = chrome.runtime.connect({name: 'devtools'});
 
     chrome.devtools.network.onRequestFinished.addListener(
         function (request) {
 
+            chrome.devtools.inspectedWindow.eval(
+                'console.log( unescape("' +
+                escape(JSON.stringify(request)) + '")); console.log(chrome.runtime)');
+
             chrome.runtime.sendMessage({request}, function (response) {
                 console.log(response)
             });
-
         }
     );
 

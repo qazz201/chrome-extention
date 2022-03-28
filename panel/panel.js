@@ -24,8 +24,11 @@ function fillTable(tableRef, request) {
             _resourceType: resourceType,
             response: {status, content: {size}},
             timings: {blocked},
-            request: {method, postData: {text}}
+            request: {method,}
         } = request;
+
+        let text = request['request']?.postData?.text;
+
 
         let apexClassAndMethodName = '';
         time = convertMillisToSecOrMin(time);
@@ -47,7 +50,7 @@ function convertMillisToSecOrMin(time) {
         return `${(time / 1000).toFixed(1)} sec`;
     }
     if (time >= 60000) {
-        return `${Math.round(time / 60000)}min ${(time - 60000) / 1000}sec`
+        return `${Math.round(time / 60000)}min ${((time - 60000) / 1000).toFixed(1)}sec`
     }
     return time;
 }

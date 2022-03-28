@@ -3,9 +3,9 @@
   "description": "First extention!",
   "version": "1.0",
   "manifest_version": 3,
-   "devtools_page": "devtools-page.html",
+   "devtools_page": "./devtools/index.html",
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "./popup/index.html"
   },
   "background": {
     "service_worker": "background.js"
