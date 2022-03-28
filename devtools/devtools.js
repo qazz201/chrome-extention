@@ -1,19 +1,16 @@
-chrome.devtools.panels.create('MY devtools', null, '../panel/index.html', function (panel) {
-    // const port = chrome.runtime.connect({name: 'devtools'});
+import {message} from "../utility/message.js";
 
+const {DEVTOOLS_REQUEST_FINISHED} = message;
+
+chrome.devtools.panels.create('MY devtools', null, '../panel/index.html', function (panel) {
     chrome.devtools.network.onRequestFinished.addListener(
         function (request) {
-
-            chrome.devtools.inspectedWindow.eval(
-                'console.log( unescape("' +
-                escape(JSON.stringify(request)) + '")); console.log(chrome.runtime)');
-
-            chrome.runtime.sendMessage({request}, function (response) {
-                console.log(response)
-            });
+            chrome.runtime.sendMessage({message: DEVTOOLS_REQUEST_FINISHED, payload: request}, null);
         }
     );
 
+
+    // const port = chrome.runtime.connect({name: 'devtools'});
     // port.onMessage.addListener(function (msg) {
     //     console.log('Received message _ON_ devtools page', msg);
     // });

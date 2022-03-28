@@ -1,18 +1,23 @@
+import {message} from "../utility/message.js";
+
+const {DEVTOOLS_REQUEST_FINISHED} = message;
+
 document.addEventListener("DOMContentLoaded", function (event) {
     document.querySelector('.clearRequestTable').addEventListener('click', handleClearTable);
 });
 
 chrome.runtime.onMessage.addListener(
-    function (message, sender, sendResponse) {
+    function (msg, sender, sendResponse) {
+        const {message, payload} = msg;
 
-        // chrome.devtools.inspectedWindow.eval(
-        //     'console.log("RESSS___"+unescape("' +
-        //     escape(JSON.stringify(message)) + '")); console.log(chrome.runtime)');
+        console.log('AAAAAA___', (message == DEVTOOLS_REQUEST_FINISHED), message, payload)
 
-        fillTable(
-            document.querySelector('.table-container__requests'),
-            message.request
-        );
+        if (message == DEVTOOLS_REQUEST_FINISHED) {
+            fillTable(
+                document.querySelector('.table-container__requests'),
+                payload
+            );
+        }
     }
 );
 
