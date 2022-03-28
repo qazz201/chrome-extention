@@ -1,4 +1,3 @@
-
 export const message = {
     DEVTOOLS_REQUEST_FINISHED: 'DEVTOOLS_REQUEST_FINISHED'
 };

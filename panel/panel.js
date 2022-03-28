@@ -40,7 +40,15 @@ function fillTable(tableRef, request) {
 
         createTableRow(
             tableRef,
-            [convertMilliseconds(time), convertBites(bodySize), convertBites(size), method, apexClassAndMethodName, resourceType, status,]);
+            [
+                convertMilliseconds(time),
+                convertBites(bodySize),
+                convertBites(size),
+                method,
+                apexClassAndMethodName,
+                resourceType,
+                status,
+            ]);
     }
 }
 
@@ -55,7 +63,8 @@ function convertMilliseconds(time) {
     if (time >= 60000) {
         return `${Math.round(time / 60000)}min ${((time - 60000) / 1000).toFixed(1)}sec`
     }
-    return time;
+
+    return `${time.toFixed(1)} ms`;
 }
 
 function convertBites(bites) {
@@ -69,10 +78,6 @@ function convertBites(bites) {
 function extractApexClassAndMethodName(encodedUriString) {
     const decodedRequestString = decodeURIComponent(decodeURI(encodedUriString));
     const classMethodResult = decodedRequestString.match(/"classname":".+?"."method":".+?"/g);
-
-    // chrome.devtools.inspectedWindow.eval(
-    //     'console.log("RESSS___"+unescape("' +
-    //     escape(decodedRequestString) + '")); console.log(chrome.runtime)');
 
     return classMethodResult && classMethodResult.length ? classMethodResult.join('\n') : '';
 }
