@@ -1,6 +1,6 @@
 {
-  "name": "Devtools Extension",
-  "description": "First extention!",
+  "name": "CT4 Eng",
+  "description": "Devtools extension for Salesforce Requests monitoring",
   "version": "1.0",
   "manifest_version": 3,
    "devtools_page": "./devtools/index.html",

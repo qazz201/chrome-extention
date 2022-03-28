@@ -3,14 +3,12 @@ import {message} from "../utility/message.js";
 const {DEVTOOLS_REQUEST_FINISHED} = message;
 
 document.addEventListener("DOMContentLoaded", function (event) {
-    document.querySelector('.clearRequestTable').addEventListener('click', handleClearTable);
+    document.querySelector('.table-container__clear-button').addEventListener('click', handleClearTable);
 });
 
 chrome.runtime.onMessage.addListener(
     function (msg, sender, sendResponse) {
         const {message, payload} = msg;
-
-        console.log('AAAAAA___', (message == DEVTOOLS_REQUEST_FINISHED), message, payload)
 
         if (message == DEVTOOLS_REQUEST_FINISHED) {
             fillTable(
@@ -22,31 +20,31 @@ chrome.runtime.onMessage.addListener(
 );
 
 function fillTable(tableRef, request) {
-    if (request['_resourceType'] == 'xhr' || request['_resourceType'] == 'fetch') {
+    const {_resourceType} = request;
+    if (_resourceType == 'xhr' || _resourceType == 'fetch') {
 
-        let {
+        const {
             time,
             _resourceType: resourceType,
             response: {status, content: {size}},
             timings: {blocked},
-            request: {method,}
+            request: {method, bodySize}
         } = request;
 
         let text = request['request']?.postData?.text;
-
-
         let apexClassAndMethodName = '';
-        time = convertMillisToSecOrMin(time);
 
         if (text && method === 'POST') {
             apexClassAndMethodName = extractApexClassAndMethodName(text);
         }
 
-        createTableRow(tableRef, [time, apexClassAndMethodName, resourceType, status, method, size, blocked]);
+        createTableRow(
+            tableRef,
+            [convertMilliseconds(time), convertBites(bodySize), convertBites(size), method, apexClassAndMethodName, resourceType, status,]);
     }
 }
 
-function convertMillisToSecOrMin(time) {
+function convertMilliseconds(time) {
     if (time < 1000) {
         return `${time.toFixed(1)} ms`;
     }
@@ -58,6 +56,14 @@ function convertMillisToSecOrMin(time) {
         return `${Math.round(time / 60000)}min ${((time - 60000) / 1000).toFixed(1)}sec`
     }
     return time;
+}
+
+function convertBites(bites) {
+    if (bites < 1000) return `${bites} b`;
+
+    if (bites >= 1000) return `${(bites / 1000).toFixed(1)} kB`;
+
+    return `${bites} b`;
 }
 
 function extractApexClassAndMethodName(encodedUriString) {
@@ -81,70 +87,9 @@ function createTableRow(tableRef, cellsToInsert = []) {
 }
 
 function handleClearTable() {
-    document.querySelector('.table-container__requests')?.querySelector('tbody')?.remove()
-}
+    const table = document.querySelector('.table-container__requests');
+    const firstRow = table?.querySelector('tr');
 
-// chrome.runtime.onMessage.addListener(
-//     function (message, sender, sendResponse) {
-//
-//         const hi = document.querySelector('.hi');
-//         const {entries} = message.response;
-//         const tableRef = document.getElementById('TableA');
-//
-//         let newIndex = 0;
-//         const elIndex = entries.length - 1;
-//
-//         entries.forEach((element, index) => {
-//             if (element['_resourceType'] == 'xhr' || element['_resourceType'] == 'fetch') {
-//
-//                 const {
-//                     time,
-//                     _resourceType: resourceType,
-//                     response: {status, content: {size}},
-//                     timings: {blocked},
-//                     request: {method, postData: {text}}
-//                 } = element;
-//
-//                 let apexClassName = '';
-//
-//                 if (text) {
-//                     apexClassName = extractApexClassAndMethodName(text);
-//                 }
-//
-//                 createTableRow(tableRef, newIndex, [time, apexClassName, resourceType, status, size, blocked, method]);
-//
-//                 if (elIndex == index) {
-//                     const newRow1 = tableRef.insertRow(newIndex);
-//
-//                     const newCell4 = newRow1.insertCell(0);
-//                     const newText4 = document.createTextNode('--------------------------------------------------');
-//                     newCell4.appendChild(newText4);
-//                 }
-//
-//                 ++newIndex;
-//
-//             }
-//
-//         });
-//     }
-// );
-//
-// function extractApexClassAndMethodName(encodedUriString) {
-//     const decodedRequestString = decodeURIComponent(decodeURI(encodedUriString));
-//     const classMethodResult = decodedRequestString.match(/"classname":".+?"."method":".+?"/g);
-//
-//     chrome.devtools.inspectedWindow.eval(
-//         'console.log("RESSS___"+unescape("' +
-//         escape(decodedRequestString) + '")); console.log(chrome.runtime)');
-//
-//     return classMethodResult && classMethodResult.length ? classMethodResult.join('\n') : '';
-// }
-//
-// function createTableRow(tableRef, tableRowIndex = 0, cellsToInsert = []) {
-//     const newRow = tableRef.insertRow(tableRowIndex);
-//
-//     cellsToInsert.forEach((cellData, index) => {
-//         newRow.insertCell(index)
-//             .appendChild(document.createTextNode(cellData));
-//     })
-// }
+    table?.querySelector('tbody')?.remove();
+    table.innerHTML = firstRow.innerHTML;
+}

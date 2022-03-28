@@ -1,10 +1,35 @@
-table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
-    padding: 5px;
+@import "./table.css";
+
+
+/* Button Clear */
+.table-container__clear-button {
+    background-color: #4c98ea;
+    border-radius: 8px;
+    border-style: none;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    font-weight: 500;
+
+    line-height: 20px;
+    list-style: none;
+    margin: 5px;
+    outline: none;
+    padding: 5px 10px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    transition: color 100ms;
+    vertical-align: baseline;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
 }
 
-table tr td:nth-child(1) {
-    white-space: nowrap;
-    text-align: center;
+.table-container__clear-button:hover,
+.table-container__clear-button:focus {
+    background-color: #82a1f0;
 }
