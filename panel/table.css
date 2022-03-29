@@ -30,7 +30,7 @@ table {
 }
 
 table td, table th {
-    padding-left: 8px;
+    padding: 5px;
 }
 
 table thead tr {
