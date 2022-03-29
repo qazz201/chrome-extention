@@ -1,5 +1,4 @@
 /*[ Table ]*/
-
 table tr td:nth-child(1),
 table tr td:nth-child(2),
 table tr td:nth-child(3) {
@@ -7,9 +6,12 @@ table tr td:nth-child(3) {
     text-align: center;
 }
 
-table tr td:nth-child(5) {
+table tr td:nth-child(5),
+table tr td:nth-child(6) {
+    white-space: pre;
     max-width: 17rem;
     overflow: auto;
+    padding-left: 1rem;
 }
 
 table tr:nth-child(1) {

@@ -20,22 +20,28 @@ chrome.runtime.onMessage.addListener(
 );
 
 function fillTable(tableRef, request) {
-    const {_resourceType} = request;
-    if (_resourceType == 'xhr' || _resourceType == 'fetch') {
+    const {_resourceType: resourceType,} = request;
+
+    if (resourceType == 'xhr' || resourceType == 'fetch') {
+
+        // chrome.devtools.inspectedWindow.eval(
+        //     'console.log(unescape("' +
+        //     escape(JSON.stringify(request)) + '")); console.log(chrome.runtime)');
 
         const {
             time,
-            _resourceType: resourceType,
             response: {status, content: {size}},
             timings: {blocked},
-            request: {method, bodySize}
+            request: {method, bodySize, url},
         } = request;
 
         let text = request['request']?.postData?.text;
+        let queryString = request['request']?.queryString;
+
         let apexClassAndMethodName = '';
 
         if (text && method === 'POST') {
-            apexClassAndMethodName = extractApexClassAndMethodName(text);
+            apexClassAndMethodName = getApexClassAndMethodName(text);
         }
 
         createTableRow(
@@ -46,10 +52,20 @@ function fillTable(tableRef, request) {
                 convertBites(size),
                 method,
                 apexClassAndMethodName,
+                getQuery(queryString),
                 resourceType,
                 status,
             ]);
     }
+}
+
+function createTableRow(tableRef, cellsToInsert = []) {
+    const newRow = tableRef.insertRow(-1);
+
+    cellsToInsert.forEach((cellData, index) => {
+        newRow.insertCell(index)
+            .appendChild(document.createTextNode(cellData));
+    })
 }
 
 function convertMilliseconds(time) {
@@ -75,20 +91,16 @@ function convertBites(bites) {
     return `${bites} b`;
 }
 
-function extractApexClassAndMethodName(encodedUriString) {
+function getApexClassAndMethodName(encodedUriString) {
     const decodedRequestString = decodeURIComponent(decodeURI(encodedUriString));
-    const classMethodResult = decodedRequestString.match(/"classname":".+?"."method":".+?"/g);
+    const classMethodResult = decodedRequestString.match(/"class[name]*?":".+?"."method[name]*?":".+?"/gi);
 
     return classMethodResult && classMethodResult.length ? classMethodResult.join('\n') : '';
 }
 
-function createTableRow(tableRef, cellsToInsert = []) {
-    const newRow = tableRef.insertRow(-1);
-
-    cellsToInsert.forEach((cellData, index) => {
-        newRow.insertCell(index)
-            .appendChild(document.createTextNode(cellData));
-    })
+function getQuery(query = []) {
+    if (!Array.isArray(query)) return;
+    return query.map(param => `${param.name} = ${param.value}`).join('\n');
 }
 
 function handleClearTable() {
