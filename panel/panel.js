@@ -12,15 +12,15 @@ chrome.runtime.onMessage.addListener(
 
         if (message == DEVTOOLS_REQUEST_FINISHED) {
             fillTable(
-                document.querySelector('.table-container__requests'),
+                document.querySelector('.table-container__requests tbody'),
                 payload
             );
         }
     }
 );
 
-function fillTable(tableRef, request) {
-    const {_resourceType: resourceType,} = request;
+function fillTable(tableRef, payload) {
+    const {_resourceType: resourceType,} = payload;
 
     if (resourceType == 'xhr' || resourceType == 'fetch') {
 
@@ -32,11 +32,11 @@ function fillTable(tableRef, request) {
             time,
             response: {status, content: {size}},
             timings: {blocked},
-            request: {method, bodySize, url},
-        } = request;
+            request: {method, bodySize,},
+        } = payload;
 
-        let text = request['request']?.postData?.text;
-        let queryString = request['request']?.queryString;
+        let text = payload['request']?.postData?.text;
+        let queryString = payload['request']?.queryString;
 
         let apexClassAndMethodName = '';
 
@@ -47,6 +47,7 @@ function fillTable(tableRef, request) {
         createTableRow(
             tableRef,
             [
+                '', // css autonumber column
                 convertMilliseconds(time),
                 convertBites(bodySize),
                 convertBites(size),
@@ -104,9 +105,9 @@ function getQuery(query = []) {
 }
 
 function handleClearTable() {
+    const tbody = document.createElement('tbody');
     const table = document.querySelector('.table-container__requests');
-    const firstRow = table?.querySelector('tr');
 
-    table?.querySelector('tbody')?.remove();
-    table.innerHTML = firstRow.innerHTML;
+    table.querySelector('tbody')?.remove();
+    table.appendChild(tbody);
 }
