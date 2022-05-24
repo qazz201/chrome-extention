@@ -1,4 +1,4 @@
 # chrome-extention
 Chrome dev tools extension that shows current page requests (created for salesforce application pages to show class and method names)
 
-<img width="1071" alt="IMG 22 57 25" src="https://user-images.githubusercontent.com/39721136/160485915-d4d91de6-436e-4e03-94f2-ac386d19a9e3.png">
+<img width="1792" alt="image" src="https://user-images.githubusercontent.com/39721136/170024591-728de56a-3f21-437a-b853-4384724a809a.png">
